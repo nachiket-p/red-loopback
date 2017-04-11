@@ -1,0 +1,46 @@
+var loopback = require('loopback');
+var _ = require('lodash');
+var helper = require('../observer-helper');
+
+module.exports = function (RED) {
+  console.log("REGISTERING ASYNC NODE");
+
+  function RemoteHookNode(config) {
+    RED.nodes.createNode(this, config);
+    var node = this;
+    
+    var Model = loopback.findModel(config.modelName);
+
+    if (Model !== undefined) {
+      const observer = new helper.RemoteObserver(node.id, Model, config.method, function (msg, ctx, next) {
+        node.send(msg);
+        next();
+      });
+      // Model.beforeRemote(config.method, function(context, instance, next) {
+      //     node.send(msg)
+      //     next();
+      // });
+      // Remove existing observers if any.
+      //helper.removeOldObservers(Model, node.id);
+      if(config.methodType=='before') {
+        Model.beforeRemote(config.method, observer.observe);
+      } else {
+        Model.afterRemote(config.method, observer.observe);
+      }
+      
+      node.on('close', function () {
+        console.log('closing node')
+        observer.remove();
+      });
+      node.status({ fill: "green", shape: "dot", text: "Observing" });
+    } else {
+      const errMsg = "Model " + config.modelName +  " Not Found";
+      node.status({ fill: "red", shape: "ring", text: errMsg });
+      node.error({
+        message: errMsg
+      });
+    }
+  }
+  RED.nodes.registerType("remote-hook", RemoteHookNode);
+
+}

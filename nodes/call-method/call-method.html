@@ -1,0 +1,138 @@
+<style>
+    .tranformation-rule {
+        padding: 10px;
+    }
+    
+    .padding-bottom-10 {
+        padding-bottom: 10px;
+    }
+    
+    .padding-10 {
+        padding: 10px;
+    }
+    
+    .margin-right-10 {
+        margin-right: 10px;
+    }
+    
+    .display-flex {
+        display: flex;
+    }
+</style>
+<script type="text/javascript">
+    RED.nodes.registerType('call-method', {
+        category: 'loopback',
+        color: '#FF6347',
+        defaults: {
+            name: {
+                value: ""
+            },
+            modelname: {
+                value: "",
+                required: true
+            },
+            method: {
+                value: "find",
+                required: true
+            },
+            description: {
+                value: "",
+                required: false
+            },
+            params: { value: [] },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return (this.modelname && this.method ? (this.modelname + "_" + this.method).toUpperCase() : "call-method");
+        },
+        oneditprepare: function () {
+            var self = this;
+            $.getJSON('lbmodels', function (data) {
+                console.log('Model Data succes: ' + data);
+                if (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        row = data[i].name;
+                        var opt = '<option value="' + row + '"' + ((self.modelname === row) ? ' selected' : '') + '>' + row + '</option>';
+                        $("#node-input-modelname").append(opt);
+                    }
+                }
+            })
+
+            $("#node-input-rule-container").css('min-height', '250px').css('min-width', '450px').editableList({
+                addItem: function (row, index, data) {
+                    var param = data.param;
+                    var e = $(
+                        `<tr>
+                            <td>
+                                <div index="`+ index + `" class="padding-10 display-flex">
+                                    <input class="input-params margin-right-10" value="`+ (param || "") + `" type="text">
+                                </div>
+                            </td>
+                        </tr>`
+                    )
+                        .attr('id', 'rule-' + index);
+                    e.append('<span class="node-input-param-index">' + (index + 1) + '</span> ');
+                    $(e).appendTo(row);
+                },
+                removeItem: function (opt) {
+                    var params = $("#node-input-rule-container").editableList('items');
+                    params.each(function (i) { $(this).find(".node-input-param-index").html(i + 1); });
+                },
+
+                sortItems: function (params) {
+                    var params = $("#node-input-rule-container").editableList('items');
+                    params.each(function (i) { $(this).find(".node-input-param-index").html(i + 1); });
+                },
+                sortable: true,
+                removable: true
+            });
+            for (var i = 0; i < self.params.length; i++) {
+                var param = self.params[i];
+                $("#node-input-rule-container").editableList('addItem', { param: param });
+            }
+        },
+        oneditsave: function () {
+            var params = $("#node-input-rule-container").editableList('items');
+            var node = this;
+            node.params = [];
+
+            params.each(function (i) {
+                var paramData = $(this).data('data');
+                var param = $(this);
+                var paramValue = param.find("input").val();
+                node.params.push(paramValue);
+            });
+
+        }
+
+    });
+
+</script>
+<script type="text/x-red" data-template-name="call-method">
+    <div class="form-row">
+        <label for="node-input-modelname"><i class="icon-tag"></i> Model Name</label>
+        <!--<input type="text" id="node-input-modelname" placeholder="Model Name">-->
+        <select id="node-input-modelname">
+
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-method"><i class="icon-tag"></i> Method</label>
+        <input type="text" id="node-input-method" placeholder="Method" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-description"><i class="icon-tag"></i> Description </label>
+        <textarea id="node-input-description" placeholder="Description"></textarea>
+    </div>
+    <div class="form-row node-input-rule-container-row">
+        <ol id="node-input-rule-container"></ol>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="call-method">
+    <div>
+        <p></p>
+    </div>
+</script>

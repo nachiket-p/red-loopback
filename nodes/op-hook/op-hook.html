@@ -1,0 +1,74 @@
+<script type="text/javascript">
+    RED.nodes.registerType('OP-hook', {
+        category : 'loopback',
+        color : '#FF6347',
+        defaults : {
+            name : {
+                value : ""
+            },
+            modelName : {
+                value : "",
+                required: true
+            },
+            method : {
+                value : "access",
+                required: true
+            },
+            description: {
+                value: "",
+                required: false
+            }
+        },
+        inputs : 0,
+        outputs : 1,
+        icon : "template.png",
+        label : function() {
+            return (this.modelName && this.method ? (this.modelName+" ("+this.method+")"): "OP Hook");
+        },
+        oneditprepare: function() {
+            var self = this;
+            $.getJSON('lbmodels',function(data) {
+                console.log('Model Data succes: '+data);
+                if (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        row = data[i].name;
+                        var opt = '<option value="' + row + '"'+ ((self.modelName === row)?' selected':'')+'>' + row + '</option>';
+                        $("#node-input-modelName").append(opt);
+                    }
+                }
+            })
+        }
+    });
+</script>
+<script type="text/x-red" data-template-name="OP-hook">
+    <div class="form-row">
+        <label for="node-input-modelName"><i class="icon-tag"></i> Model Name</label>
+        <!--<input type="text" id="node-input-modelName" placeholder="Model Name">-->
+        <select id="node-input-modelName" >
+
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-method"><i class="icon-tag"></i> Method</label>
+        <!--<input type="select" id="node-input-method" placeholder="Method">-->
+        <select id="node-input-method" >
+            <!--<option value="access">access</option>-->
+            <option value="before save">before save</option>
+            <option value="after save">after save</option>
+			<option value="before delete">before delete</option>
+			<option value="after delete">after delete</option>
+            <option value="loaded">loaded</option>
+			<option value="persist">persist</option>                    
+        </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-description"><i class="icon-tag"></i> Description </label>
+      <textarea id="node-input-description" placeholder="Description"></textarea>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="OP-hook">
+    <div>
+        <p></p>
+    </div>
+</script>
