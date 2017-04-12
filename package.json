@@ -1,6 +1,6 @@
 {
   "name": "red-loopback",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provides glue code for using LoopBack & Node-RED, also provides additional nodes for loopback. Edit",
   "main": "index.js",
   "repository": "git@github.com:nachiket-p/red-loopback.git",
@@ -19,7 +19,8 @@
     "nodes": {
       "call-method": "nodes/call-method/call-method.js",
       "code-block": "nodes/code-block/code-block.js",
-      "op-hook": "nodes/op-hook/op-hook.js"
+      "op-hook": "nodes/op-hook/op-hook.js",
+      "remote-hook": "nodes/op-hook/remote-hook.js"
     }
   }
 }
