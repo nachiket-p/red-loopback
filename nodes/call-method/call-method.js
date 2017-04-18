@@ -1,18 +1,22 @@
-var loopback = require('loopback');
-var _ = require('lodash');
-const INDEX = (obj, is, value) => {
-  if (typeof is === 'string') {
-    return INDEX(obj, is.split('.'), value)
-  } else if (is.length == 1 && value !== undefined) {
-    return obj[is[0]] = value
-  } else if (is.length == 0) {
-    return obj
-  } else {
-    return INDEX(obj[is[0]], is.slice(1), value)
-  }
-}
-
 module.exports = function (RED) {
+    "use strict";
+
+  var loopback = require('loopback');
+  var _ = require('lodash');
+  var helper = require('../observer-helper');
+
+  const INDEX = (obj, is, value) => {
+    if (typeof is === 'string') {
+      return INDEX(obj, is.split('.'), value)
+    } else if (is.length == 1 && value !== undefined) {
+      return obj[is[0]] = value
+    } else if (is.length == 0) {
+      return obj
+    } else {
+      return INDEX(obj[is[0]], is.slice(1), value)
+    }
+  }
+
   function MethodNode(config) {
     console.log("CREATING");
     RED.nodes.createNode(this, config);
@@ -21,9 +25,8 @@ module.exports = function (RED) {
     var method = config.method;
     var params = config.params;
 
-    var globalContext = this.context().global;
-    var loopbackApp = globalContext.get("app");
-    var Model = loopbackApp.models[modelName];
+    const app = helper.getAppRef(this);
+    var Model = app.models[modelName];
 
     if (Model !== undefined) {
       this.status({ fill: "green", shape: "dot", text: "Model Found" });
@@ -67,5 +70,7 @@ module.exports = function (RED) {
       methodCall.apply(Model, args)
     });
   }
+  console.log("REGISTERING CALL METHOD")
   RED.nodes.registerType("call-method", MethodNode);
+  RED.library.register("loopback");
 }

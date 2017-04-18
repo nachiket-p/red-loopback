@@ -17,7 +17,7 @@ function simplifyMsg(ctx, modelName, methodName) {
   return msg;
 }
 
-var Observer = function (nodeId, Model, methodName, callback) {
+var Observer = function (Model, methodName, callback) {
   const modelName = Model.modelName
   this.observe = function (ctx, next) {
     const msg = simplifyMsg(ctx, modelName, methodName);
@@ -29,7 +29,7 @@ var Observer = function (nodeId, Model, methodName, callback) {
   }
 }
 
-var RemoteObserver = function (nodeId, Model, methodName, callback) {
+var RemoteObserver = function (Model, methodName, callback) {
   const modelName = Model.modelName
   this.observe = function (ctx, instance, next) {
     const msg = simplifyMsg(ctx, modelName, methodName);
@@ -41,9 +41,23 @@ var RemoteObserver = function (nodeId, Model, methodName, callback) {
   }
 }
 
+function getAppRef(node) {
+    const app = node.context().global.get('app');
+    if(!app) {
+      const errMsg = 'Couldnt find app (loopback app) reference in global context';
+      node.status({ fill: "red", shape: "ring", text: errMsg });
+      node.error({
+        message: errMsg
+      });
+      throw new Error(errMsg);
+    }
+    return app;
+}
+
 module.exports = {
   simplifyMsg: simplifyMsg,
   props: props,
   Observer: Observer,
-  RemoteObserver: RemoteObserver
+  RemoteObserver: RemoteObserver,
+  getAppRef
 }

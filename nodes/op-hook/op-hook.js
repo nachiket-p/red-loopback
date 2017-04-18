@@ -8,12 +8,15 @@ module.exports = function (RED) {
   function AsyncNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
-    var Model = loopback.findModel(config.modelName);
+
+    const app = helper.getAppRef(this);
+    var Model = app.models[config.modelName];
+    //var Model = loopback.findModel(config.modelName);
 
     if (Model !== undefined) {
       // Remove existing observers if any.
       //helper.removeOldObservers(Model, node.id);
-      const observer = new helper.Observer(node.id, Model, function (msg, ctx, next) {
+      const observer = new helper.Observer(Model, config.method, function (msg, ctx, next) {
         node.send(msg);
         // return control to loopback application.
         next();
@@ -34,5 +37,5 @@ module.exports = function (RED) {
     }
   }
   RED.nodes.registerType("OP-hook", AsyncNode);
-
+  RED.library.register("loopback");
 }

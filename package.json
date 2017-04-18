@@ -17,10 +17,10 @@
   },
   "node-red": {
     "nodes": {
-      "call-method": "nodes/call-method/call-method.js",
       "code-block": "nodes/code-block/code-block.js",
+      "call-method": "nodes/call-method/call-method.js",
       "op-hook": "nodes/op-hook/op-hook.js",
-      "remote-hook": "nodes/op-hook/remote-hook.js"
+      "remote-hook": "nodes/remote-hook/remote-hook.js"
     }
   }
 }

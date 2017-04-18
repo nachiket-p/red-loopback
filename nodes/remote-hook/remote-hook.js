@@ -9,10 +9,11 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     var node = this;
     
-    var Model = loopback.findModel(config.modelName);
+    const app = helper.getAppRef(this);
+    var Model = app.models[config.modelName];
 
     if (Model !== undefined) {
-      const observer = new helper.RemoteObserver(node.id, Model, config.method, function (msg, ctx, next) {
+      const observer = new helper.RemoteObserver(Model, config.method, function (msg, ctx, next) {
         node.send(msg);
         next();
       });
@@ -34,7 +35,7 @@ module.exports = function (RED) {
       });
       node.status({ fill: "green", shape: "dot", text: "Observing" });
     } else {
-      const errMsg = "Model " + config.modelName +  " Not Found";
+      const errMsg = "Model " + config.modelName + " Not Found";
       node.status({ fill: "red", shape: "ring", text: errMsg });
       node.error({
         message: errMsg
@@ -42,5 +43,5 @@ module.exports = function (RED) {
     }
   }
   RED.nodes.registerType("remote-hook", RemoteHookNode);
-
+  RED.library.register("loopback");
 }
