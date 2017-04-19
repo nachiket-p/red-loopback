@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 // function setCookie(req, res) {
 //   var tokenCookie = req.signedCookies && req.signedCookies.access_token;
 
@@ -15,7 +17,8 @@
 
 function redRoutes(params) {
   paths = params.paths || []
-  
+  //principalType = params.principalType || "USER";
+
   return function (req, res, next) {
     var matched = paths.some(function(securePath){
       var regEx = new RegExp('^'+securePath)
@@ -30,10 +33,27 @@ function redRoutes(params) {
     }
 
     if (!req.accessToken) {
-      res.status(401).send("USER UNAUTHORIZED!") 
-    } else {
-      next()
+      res.status(401).send('USER UNAUTHENTICATED!') 
+      return;
     }
+
+    const app = req.app;
+    const userId = req.accessToken.userId;
+    const RoleModel = app.models[params.roleModel] || app.models.Role;
+
+    RoleModel.getRoles({'principalId': userId}, {'returnOnlyRoleNames': true}, function(err, roles){
+      console.log("### ROLES : ", roles)
+      if(err) {
+        next(err)
+        return;
+      }
+      const allowed = _.intersection(params.roles, roles).length > 0;
+      if(!allowed) {
+        res.status(401).send('USER UNAUTHORIZED!') 
+        return;
+      }
+      next();
+    })
   }
 }
 
