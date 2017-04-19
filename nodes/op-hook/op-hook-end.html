@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('OP-hook-end', {
+        category: 'loopback',
+        color: '#FF6347',
+        defaults: {
+            name: {
+                value: null
+            }
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "template.png",
+        label: function () {
+            return this.name || "OP-hook-end";
+        }
+    });
+
+</script>
+<script type="text/x-red" data-template-name="OP-hook-end">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="OP-hook-end">
+    <div>
+        <p></p>
+    </div>
+</script>

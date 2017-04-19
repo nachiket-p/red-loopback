@@ -17,7 +17,11 @@
             description: {
                 value: "",
                 required: false
-            }
+            },
+            isSync : {
+                value : false,
+                required: false
+            },
         },
         inputs : 0,
         outputs : 1,
@@ -37,6 +41,13 @@
                     }
                 }
             })
+
+
+            if (this.isSync === "true" || this.isSync === true) {
+                $("#node-input-isSync").prop("checked",true);
+            } else {
+                $("#node-input-isSync").prop("checked",false);
+            }
         }
     });
 </script>
@@ -62,9 +73,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label></label>
+        <input type="checkbox" id="node-input-isSync" style="margin-left: 0px; vertical-align: top; width: auto !important;"> 
+        <label style="width:auto !important;" for="node-input-isSync">Sync Hook (use op-hook-end Node) </label>
+    </div>
+    <div class="form-row">
       <label for="node-input-description"><i class="icon-tag"></i> Description </label>
       <textarea id="node-input-description" placeholder="Description"></textarea>
-  </div>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="OP-hook">

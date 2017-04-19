@@ -17,9 +17,6 @@ function redRoutes(params) {
   paths = params.paths || []
   
   return function (req, res, next) {
-    console.log("ACC TOK: ", req.accessToken
-      ? "YES"
-      : "NO")
     var matched = paths.some(function(securePath){
       var regEx = new RegExp('^'+securePath)
       return req.path.match(regEx)
@@ -33,7 +30,7 @@ function redRoutes(params) {
     }
 
     if (!req.accessToken) {
-      res.send(401, "USER UNAUTHORIZED");
+      res.status(401).send("USER UNAUTHORIZED!") 
     } else {
       next()
     }

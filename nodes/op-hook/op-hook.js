@@ -5,7 +5,7 @@ var helper = require('../observer-helper');
 module.exports = function (RED) {
   console.log("REGISTERING ASYNC NODE");
 
-  function AsyncNode(config) {
+  function OpHookNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
 
@@ -17,9 +17,16 @@ module.exports = function (RED) {
       // Remove existing observers if any.
       //helper.removeOldObservers(Model, node.id);
       const observer = new helper.Observer(Model, config.method, function (msg, ctx, next) {
+        if(config.isSync) {
+          msg.endSync = function (msg) {
+            next();
+          }
+        }
         node.send(msg);
-        // return control to loopback application.
-        next();
+        if(!config.isSync) {
+          // go to next
+          next();
+        }
       });
       Model.observe(config.method, observer.observe);
 
@@ -36,6 +43,6 @@ module.exports = function (RED) {
       });
     }
   }
-  RED.nodes.registerType("OP-hook", AsyncNode);
+  RED.nodes.registerType("OP-hook", OpHookNode);
   RED.library.register("loopback");
 }

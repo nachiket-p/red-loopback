@@ -20,6 +20,7 @@
       "code-block": "nodes/code-block/code-block.js",
       "call-method": "nodes/call-method/call-method.js",
       "op-hook": "nodes/op-hook/op-hook.js",
+      "op-hook-end": "nodes/op-hook/op-hook-end.js",
       "remote-hook": "nodes/remote-hook/remote-hook.js"
     }
   }
