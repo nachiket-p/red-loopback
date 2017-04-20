@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-    "use strict";
+  "use strict";
 
   var loopback = require('loopback');
   var _ = require('lodash');
@@ -52,17 +52,21 @@ module.exports = function (RED) {
             message: error.message
           });
         }
-         msg.payload = {
-            error: error,
-            result: result
-          }
-          return node.send(msg);
+        msg.payload = {
+          error: error,
+          result: result
+        }
+        return node.send(msg);
       }
       var args = [];
       console.log("calling loopback-method with params", params, msg)
       for (var i = 0; i < params.length; i++) {
-        var param = params[i];
-        args.push(INDEX(msg, param));
+        var param = params[i], value;
+        value = param.value;
+        if (param.valueType === 'msg') {
+          value = RED.util.evaluateNodeProperty(param.value, param.valueType, node, msg);
+        }
+        args.push(value);
       }
       console.log("calling loopback-method with ARGS: ", args)
       args.push(callbackFunc);

@@ -25,7 +25,7 @@
         },
         inputs : 0,
         outputs : 1,
-        icon : "template.png",
+        icon : "c_function.png",
         label : function() {
             return (this.modelName && this.method ? (this.modelName+" ("+this.method+")"): "Remote Hook");
         },
@@ -46,25 +46,25 @@
 </script>
 <script type="text/x-red" data-template-name="remote-hook">
     <div class="form-row">
-        <label for="node-input-modelName"><i class="icon-tag"></i> Model Name</label>
+        <label for="node-input-modelName"><i class="fa fa-table"></i> Model Name</label>
         <!--<input type="text" id="node-input-modelName" placeholder="Model Name">-->
         <select id="node-input-modelName" >
 
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-method"><i class="fa fa-tag"></i> Method</label>
+        <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
         <input type="text" id="node-input-method" >
     </div>
     <div class="form-row">
-        <label for="node-input-methodType"><i class="fa fa-tag"></i> Method Type</label>
+        <label for="node-input-methodType"><i class="fa fa-filter"></i> Method Type</label>
         <select id="node-input-methodType">
             <option value="before">Before</option>
             <option value="after">After</option>
         </select>
     </div>
     <div class="form-row">
-      <label for="node-input-description"><i class="icon-tag"></i> Description </label>
+      <label for="node-input-description"><i class="fa fa-info"></i> Description </label>
       <textarea id="node-input-description" placeholder="Description"></textarea>
   </div>
 </script>
