@@ -2,6 +2,8 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var vm = require("vm");
+    var _ = require('lodash');
+    var async = require('lodash');
     var helper = require('../observer-helper');
 
     function sendResults(node,_msgid,msgs) {
@@ -60,6 +62,8 @@ module.exports = function(RED) {
         var sandbox = {
             app: app,
             models: app.models,
+            _: _,
+            async: async,
             console:console,
             util:util,
             Buffer:Buffer,
