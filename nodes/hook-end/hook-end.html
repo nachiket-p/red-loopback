@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('OP-hook-end', {
+    RED.nodes.registerType('hook-end', {
         category: 'loopback',
         color: '#FF6347',
         defaults: {
@@ -11,19 +11,19 @@
         outputs: 0,
         icon: "c_function.png",
         label: function () {
-            return this.name || "OP-hook-end";
+            return this.name || "hook-end";
         }
     });
 
 </script>
-<script type="text/x-red" data-template-name="OP-hook-end">
+<script type="text/x-red" data-template-name="hook-end">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="OP-hook-end">
+<script type="text/x-red" data-help-name="hook-end">
     <div>
         <p></p>
     </div>

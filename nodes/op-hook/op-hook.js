@@ -1,5 +1,3 @@
-var loopback = require('loopback');
-var _ = require('lodash');
 var helper = require('../observer-helper');
 
 module.exports = function (RED) {
@@ -11,22 +9,13 @@ module.exports = function (RED) {
 
     const app = helper.getAppRef(this);
     var Model = app.models[config.modelName];
-    //var Model = loopback.findModel(config.modelName);
 
     if (Model !== undefined) {
-      // Remove existing observers if any.
-      //helper.removeOldObservers(Model, node.id);
       const observer = new helper.Observer(Model, config.method, function (msg, ctx, next) {
-        if(config.isSync) {
-          msg.endSync = function (msg) {
-            next();
-          }
-        }
-        node.send(msg);
-        if(!config.isSync) {
-          // go to next
+        msg.endSync = function (msg) {
           next();
         }
+        node.send(msg);
       });
       Model.observe(config.method, observer.observe);
 
@@ -36,13 +25,14 @@ module.exports = function (RED) {
       });
       node.status({ fill: "green", shape: "dot", text: "Observing" });
     } else {
-      const errMsg = "Model " + config.modelName +  " Not Found";
+      const errMsg = "Model " + config.modelName + " Not Found";
       node.status({ fill: "red", shape: "ring", text: errMsg });
       node.error({
         message: errMsg
       });
     }
   }
+  
   RED.nodes.registerType("OP-hook", OpHookNode);
   RED.library.register("loopback");
 }

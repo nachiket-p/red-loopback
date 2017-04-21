@@ -24,7 +24,7 @@ var Observer = function (Model, methodName, callback) {
     callback(msg, ctx, next);
   }
 
-  this.remove = function() {
+  this.remove = function () {
     Model.removeObserver(methodName, this.observe)
   }
 }
@@ -32,26 +32,29 @@ var Observer = function (Model, methodName, callback) {
 var RemoteObserver = function (Model, methodName, callback) {
   const modelName = Model.modelName
   this.observe = function (ctx, instance, next) {
+    if (instance instanceof Function) {
+      next = instance
+    }
     const msg = simplifyMsg(ctx, modelName, methodName);
     callback(msg, ctx, next);
   }
 
-  this.remove = function() {
+  this.remove = function () {
     Model.removeObserver(methodName, this.observe)
   }
 }
 
 function getAppRef(node) {
-    const app = node.context().global.get('app');
-    if(!app) {
-      const errMsg = 'Couldnt find app (loopback app) reference in global context';
-      node.status({ fill: "red", shape: "ring", text: errMsg });
-      node.error({
-        message: errMsg
-      });
-      throw new Error(errMsg);
-    }
-    return app;
+  const app = node.context().global.get('app');
+  if (!app) {
+    const errMsg = 'Couldnt find app (loopback app) reference in global context';
+    node.status({ fill: "red", shape: "ring", text: errMsg });
+    node.error({
+      message: errMsg
+    });
+    throw new Error(errMsg);
+  }
+  return app;
 }
 
 module.exports = {

@@ -17,11 +17,7 @@
             description: {
                 value: "",
                 required: false
-            },
-            isSync : {
-                value : false,
-                required: false
-            },
+            }
         },
         inputs : 0,
         outputs : 1,
@@ -41,27 +37,18 @@
                     }
                 }
             })
-
-
-            if (this.isSync === "true" || this.isSync === true) {
-                $("#node-input-isSync").prop("checked",true);
-            } else {
-                $("#node-input-isSync").prop("checked",false);
-            }
         }
     });
 </script>
 <script type="text/x-red" data-template-name="OP-hook">
     <div class="form-row">
         <label for="node-input-modelName"><i class="fa fa-table"></i> Model Name</label>
-        <!--<input type="text" id="node-input-modelName" placeholder="Model Name">-->
         <select id="node-input-modelName" >
 
         </select>
     </div>
     <div class="form-row">
         <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
-        <!--<input type="select" id="node-input-method" placeholder="Method">-->
         <select id="node-input-method" >
             <!--<option value="access">access</option>-->
             <option value="before save">before save</option>
@@ -71,11 +58,6 @@
             <option value="loaded">loaded</option>
 			<option value="persist">persist</option>                    
         </select>
-    </div>
-    <div class="form-row">
-        <label></label>
-        <input type="checkbox" id="node-input-isSync" style="margin-left: 0px; vertical-align: top; width: auto !important;"> 
-        <label style="width:auto !important;" for="node-input-isSync">Sync Hook (use op-hook-end Node) </label>
     </div>
     <div class="form-row">
       <label for="node-input-description"><i class="fa fa-info"></i> Description </label>

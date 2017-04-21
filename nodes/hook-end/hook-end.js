@@ -3,15 +3,15 @@ module.exports = function (RED) {
   var loopback = require('loopback');
   var _ = require('lodash');
 
-  function OpHookEndNode(config) {
+  function HookEndNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
 
     node.on('input', function (msg) {
-      if(msg.endSync) {
+      if (msg.endSync) {
         msg.endSync(msg);
       } else {
-        const errMsg = "Only needed with OP Hook (sync setting)";
+        const errMsg = "Missing end function from msg";
         node.status({ fill: "red", shape: "ring", text: errMsg });
       }
     });
@@ -20,6 +20,6 @@ module.exports = function (RED) {
 
     });
   }
-  RED.nodes.registerType("OP-hook-end", OpHookEndNode);
+  RED.nodes.registerType("hook-end", HookEndNode);
   RED.library.register("loopback");
 }
