@@ -30,17 +30,30 @@ var Observer = function (Model, methodName, callback) {
 }
 
 var RemoteObserver = function (Model, methodName, callback) {
-  const modelName = Model.modelName
+  const modelName = Model.modelName;
+  let isActive = true;
   this.observe = function (ctx, instance, next) {
+    //NOTE: If marked as notActive, do not execute anything for this Remote Observer instance. 
+    if(!isActive) {
+      next();
+      return;
+    }
     if (instance instanceof Function) {
       next = instance
     }
     const msg = simplifyMsg(ctx, modelName, methodName);
+    //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
+    delete msg.lbctx.app;
+    msg.req = msg.lbctx.req;
+    msg.res = msg.lbctx.res;
+    msg.lbctx.req = msg.lbctx.res = null;
     callback(msg, ctx, next);
   }
 
   this.remove = function () {
-    Model.removeObserver(methodName, this.observe)
+    //NOTE: There are no methods available to remove Remote Observer in LoopBack 3.6.0
+    //Model.removeObserver(methodName, this.observe)
+    isActive=false;
   }
 }
 

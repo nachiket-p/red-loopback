@@ -1,7 +1,7 @@
 var helper = require('../observer-helper');
 
 module.exports = function (RED) {
-  console.log("REGISTERING ASYNC NODE");
+  console.log("REGISTERING OP-HOOK NODE");
 
   function OpHookNode(config) {
     RED.nodes.createNode(this, config);
@@ -12,7 +12,7 @@ module.exports = function (RED) {
 
     if (Model !== undefined) {
       const observer = new helper.Observer(Model, config.method, function (msg, ctx, next) {
-        msg.endSync = function (msg) {
+        msg.endHook = function (msg) {
           next();
         }
         node.send(msg);

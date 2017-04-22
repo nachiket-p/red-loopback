@@ -2,7 +2,7 @@ var _ = require('lodash');
 var helper = require('../observer-helper');
 
 module.exports = function (RED) {
-  console.log("REGISTERING ASYNC NODE");
+  console.log("REGISTERING REMOTE-HOOK NODE");
 
   function RemoteHookNode(config) {
     RED.nodes.createNode(this, config);
@@ -13,7 +13,7 @@ module.exports = function (RED) {
 
     if (Model !== undefined) {
       const observer = new helper.RemoteObserver(Model, config.method, function (msg, ctx, next) {
-        msg.endSync = function (msg) {
+        msg.endHook = function (msg) {
           next();
         }
         node.send(msg);
