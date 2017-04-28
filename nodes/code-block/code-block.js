@@ -60,6 +60,7 @@ module.exports = function(RED) {
         const app = helper.getAppRef(this);
         //const loopbackApp = node.context().global.get('app');
         var sandbox = {
+            env: _.clone(process.env),
             app: app,
             models: app.models,
             _: _,
