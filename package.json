@@ -17,6 +17,7 @@
   },
   "node-red": {
     "nodes": {
+      "event": "nodes/event/event.js",
       "code-block": "nodes/code-block/code-block.js",
       "call-method": "nodes/call-method/call-method.js",
       "op-hook": "nodes/op-hook/op-hook.js",

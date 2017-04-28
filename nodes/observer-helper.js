@@ -17,15 +17,33 @@ function simplifyMsg(ctx, modelName, methodName) {
   return msg;
 }
 
-var Observer = function (Model, methodName, callback) {
+var OperationObserver = function (Model, methodName, callback) {
   const modelName = Model.modelName
   this.observe = function (ctx, next) {
     const msg = simplifyMsg(ctx, modelName, methodName);
     callback(msg, ctx, next);
   }
+  Model.observe(methodName, this.observe);
 
   this.remove = function () {
     Model.removeObserver(methodName, this.observe)
+  }
+}
+
+var EventObserver = function (Model, methodName, callback) {
+  const modelName = Model.modelName
+  this.observe = function (instance) {
+    const msg = {
+       text: modelName + '.' + methodName + ' triggered',
+       modelName: modelName,
+       payload: instance
+    }
+    callback(msg);
+  }
+  Model.addListener(methodName, this.observe);
+
+  this.remove = function () {
+    Model.removeListener(methodName, this.observe)
   }
 }
 
@@ -73,7 +91,8 @@ function getAppRef(node) {
 module.exports = {
   simplifyMsg: simplifyMsg,
   props: props,
-  Observer: Observer,
+  OperationObserver: OperationObserver,
+  EventObserver: EventObserver,
   RemoteObserver: RemoteObserver,
   getAppRef
 }
