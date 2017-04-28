@@ -39,11 +39,16 @@
     <p>It adds: 
       <ul>
         <li><code>app</code> object</li> 
+        <ul>
+            <li><code>app.settings</code> use this for getting all Loopback settings e.g. host, port etc.</li>
+        </ul>
         <li><code>models</code> object (e.g. models.User.find) </li>
+        <li><code>env</code> all environment variables </li>
         <li><code>_</code> lodash utility node library</li> 
         <li><code>async</code> Async node library </li>
       </ul>
     </p>
+    <hr />
     <p>A code block where you can write code to do more interesting things.</p>
     <p>The message is passed in as a JavaScript object called <code>msg</code>.</p>
     <p>By convention it will have a <code>msg.payload</code> property containing

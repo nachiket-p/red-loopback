@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('OP-hook', {
+    RED.nodes.registerType('event', {
         category : 'loopback',
         color : '#FF6347',
         defaults : {
@@ -23,7 +23,7 @@
         outputs : 1,
         icon : "c_function.png",
         label : function() {
-            return (this.modelName && this.method ? ("OP | " + this.modelName+" ("+this.method+")"): "OP Hook");
+            return (this.modelName && this.method ? ("EVENT | " + this.modelName+" ("+this.method+")"): "Model Event");
         },
         oneditprepare: function() {
             var self = this;
@@ -40,7 +40,7 @@
         }
     });
 </script>
-<script type="text/x-red" data-template-name="OP-hook">
+<script type="text/x-red" data-template-name="event">
     <div class="form-row">
         <label for="node-input-modelName"><i class="fa fa-table"></i> Model Name</label>
         <select id="node-input-modelName" >
@@ -49,15 +49,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
-        <select id="node-input-method" >
-            <!--<option value="access">access</option>-->
-            <option value="before save">before save</option>
-            <option value="after save">after save</option>
-			<option value="before delete">before delete</option>
-			<option value="after delete">after delete</option>
-            <option value="loaded">loaded</option>
-			<option value="persist">persist</option>                    
-        </select>
+        <input type="text" id="node-input-method" >
     </div>
     <div class="form-row">
       <label for="node-input-description"><i class="fa fa-info"></i> Description </label>
@@ -65,8 +57,13 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="OP-hook">
+<script type="text/x-red" data-help-name="event">
     <div>
-        <p></p>
+        Only Values which works are following. And any custom emitted events will work as well.
+        <ul>
+          <li>attached</li>
+          <li>dataSourceAttached</li>
+          <li>set</li>
+        </ul>
     </div>
 </script>

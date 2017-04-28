@@ -1,9 +1,9 @@
 var helper = require('../observer-helper');
 
 module.exports = function (RED) {
-  console.log("REGISTERING OP-HOOK NODE");
+  console.log("REGISTERING EVENT NODE");
 
-  function OpHookNode(config) {
+  function EventNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
 
@@ -11,12 +11,10 @@ module.exports = function (RED) {
     var Model = app.models[config.modelName];
 
     if (Model !== undefined) {
-      const observer = new helper.OperationObserver(Model, config.method, function (msg, ctx, next) {
-        msg.endHook = function (msg) {
-          next();
-        }
+      const observer = new helper.EventObserver(Model, config.method, function (msg) {
         node.send(msg);
       });
+      console.log("### OBERSERINVBG ON: " + config.method + " OF " + config.modelName)
 
       node.on('close', function () {
         console.log('closing node')
@@ -32,6 +30,6 @@ module.exports = function (RED) {
     }
   }
   
-  RED.nodes.registerType("OP-hook", OpHookNode);
+  RED.nodes.registerType("event", EventNode);
   RED.library.register("loopback");
 }
