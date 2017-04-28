@@ -1,6 +1,6 @@
 {
   "name": "red-loopback",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Provides glue code for using LoopBack & Node-RED, also provides additional nodes for loopback. Edit",
   "main": "index.js",
   "repository": "git@github.com:nachiket-p/red-loopback.git",
