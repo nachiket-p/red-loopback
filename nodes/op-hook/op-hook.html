@@ -21,7 +21,7 @@
         },
         inputs : 0,
         outputs : 1,
-        icon : "c_function.png",
+        icon : "hook.png",
         label : function() {
             return (this.modelName && this.method ? ("OP | " + this.modelName+" ("+this.method+")"): "OP Hook");
         },
@@ -67,6 +67,7 @@
 
 <script type="text/x-red" data-help-name="OP-hook">
     <div>
-        <p></p>
+        <p>It observes to models and allows to do something when a model performs a specific operation.
+            </br> eg. create, save, or updateOrCreate etc.
     </div>
 </script>

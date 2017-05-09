@@ -25,7 +25,7 @@
         },
         inputs : 0,
         outputs : 1,
-        icon : "c_function.png",
+        icon : "hook.png",
         label : function() {
             return (this.modelName && this.method ? (this.modelName+" ("+this.method+")"): "Remote Hook");
         },
@@ -70,7 +70,16 @@
 </script>
 
 <script type="text/x-red" data-help-name="remote-hook">
-    <div>
-        <p></p>
+     <div>
+        <p>A remote hook enables you to execute a function before or after a remote method is called by a client. </p>
+        Method type
+        <ul>
+            <li>
+                before : runs before the remote method
+            </li>
+            <li>
+                after : runs after the remote method has finished successfully
+            </li>
+        </ul>
     </div>
 </script>

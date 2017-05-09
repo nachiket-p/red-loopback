@@ -2,19 +2,19 @@
   .tranformation-rule {
     padding: 10px;
   }
-  
+
   .padding-bottom-10 {
     padding-bottom: 10px;
   }
-  
+
   .padding-10 {
     padding: 10px;
   }
-  
+
   .margin-right-10 {
     margin-right: 10px;
   }
-  
+
   .display-flex {
     display: flex;
   }
@@ -43,7 +43,7 @@
     },
     inputs: 1,
     outputs: 1,
-    icon: "c_function.png",
+    icon: "callmethod.png",
     label: function () {
       return (this.modelname && this.method ? (this.modelname + "_" + this.method).toUpperCase() : "call-method");
     },
@@ -65,10 +65,10 @@
           var param = data.param;
           var dynRow = $(`<div></div>`).attr('id', 'rule-' + index).appendTo(row);
           var valueField = $('<input id="valueType"/>', { class: "node-input-rule-value", type: "text", style: "margin-left: 5px;" }).appendTo(dynRow).typedInput({ default: 'str', types: ['msg', 'str', 'num', 'json', 'bool'] });
-          var finalspan = $('<span/>',{style:"float: right;margin-top: 6px;"}).appendTo(dynRow);
-          finalspan.append(' &#8594; <span class="node-input-rule-index">'+(index+1)+'</span> ');
-          valueField.typedInput('value',param.value);
-          valueField.typedInput('type',param.valueType || 'str');
+          var finalspan = $('<span/>', { style: "float: right;margin-top: 6px;" }).appendTo(dynRow);
+          finalspan.append(' &#8594; <span class="node-input-rule-index">' + (index + 1) + '</span> ');
+          valueField.typedInput('value', param.value);
+          valueField.typedInput('type', param.valueType || 'str');
         },
         removeItem: function (opt) {
           var params = $("#node-input-rule-container").editableList('items');
@@ -129,6 +129,22 @@
 
 <script type="text/x-red" data-help-name="call-method">
   <div>
-    <p></p>
+    <p>
+      A node performs all read operation on models that returns a set of data or results.
+    </p>
+    <ul>
+      <li>
+        Model Name : lists all models
+      </li>
+      <li>
+        Method : query method
+      </li>
+      <li>
+        args : passes required arguments
+      </li>
+    </ul>
+    <p>
+      Select appropriate model from Model Name and use query method to perform opration.
+    </p>
   </div>
 </script>
