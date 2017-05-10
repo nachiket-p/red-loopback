@@ -19,7 +19,9 @@ red-loopback provides following nodes.
 * **Code Block**: For executing any javascript code
 * **Operation Hook**: Loopback Model Operation Hook
 * **Method Call**: For calling any Loopback Model method
-* **Remote Hook (WIP)**:
+* **Remote Hook**: Enables you to execute a function before or after a remote method is called by a client  
+* **Opration Hook**: Observes to models and allows to do something when a model performs a specific operation  
+* **End Hook**: Terminates both opration and remote hooks
 
 
 ### Installation
