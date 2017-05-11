@@ -34,9 +34,9 @@ var EventObserver = function (Model, methodName, callback) {
   const modelName = Model.modelName
   this.observe = function (instance) {
     const msg = {
-       text: modelName + '.' + methodName + ' triggered',
-       modelName: modelName,
-       payload: instance
+      text: modelName + '.' + methodName + ' triggered',
+      modelName: modelName,
+      payload: instance
     }
     callback(msg);
   }
@@ -52,7 +52,7 @@ var RemoteObserver = function (Model, methodName, callback) {
   let isActive = true;
   this.observe = function (ctx, instance, next) {
     //NOTE: If marked as notActive, do not execute anything for this Remote Observer instance. 
-    if(!isActive) {
+    if (!isActive) {
       next();
       return;
     }
@@ -71,7 +71,7 @@ var RemoteObserver = function (Model, methodName, callback) {
   this.remove = function () {
     //NOTE: There are no methods available to remove Remote Observer in LoopBack 3.6.0
     //Model.removeObserver(methodName, this.observe)
-    isActive=false;
+    isActive = false;
   }
 }
 
@@ -88,11 +88,22 @@ function getAppRef(node) {
   return app;
 }
 
+const hookEnd = function (err, msg) {
+  //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
+  msg.lbctx.req = msg.req;
+  msg.lbctx.res = msg.res;
+  delete msg.req;
+  delete msg.res;
+
+  msg.endHook(err, msg);
+}
+
 module.exports = {
   simplifyMsg: simplifyMsg,
   props: props,
   OperationObserver: OperationObserver,
   EventObserver: EventObserver,
   RemoteObserver: RemoteObserver,
-  getAppRef
+  hookEnd: hookEnd,
+  getAppRef,
 }

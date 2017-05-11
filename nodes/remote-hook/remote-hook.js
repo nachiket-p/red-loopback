@@ -13,8 +13,8 @@ module.exports = function (RED) {
 
     if (Model !== undefined) {
       const observer = new helper.RemoteObserver(Model, config.method, function (msg, ctx, next) {
-        msg.endHook = function (msg) {
-          next();
+        msg.endHook = function (err, msg) {
+          next(err);
         }
         node.send(msg);
       });

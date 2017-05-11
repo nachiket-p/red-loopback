@@ -1,0 +1,7 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "editor.tabSize": 2,
+  "editor.scrollBeyondLastLine": false,
+  "editor.detectIndentation":false,
+  "window.reopenFolders": "all"
+}

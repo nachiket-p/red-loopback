@@ -1,0 +1,44 @@
+<script type="text/javascript">
+  RED.nodes.registerType('hook-end-error', {
+    category: 'loopback',
+    color: '#FF6347',
+    defaults: {
+      name: {
+        value: null
+      },
+      message: {
+        value: "Validation Error occured!"
+      },
+      errorCode: {
+        value: null
+      }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "c_function.png",
+    label: function () {
+      return this.name || "hook-end-error";
+    }
+  });
+
+</script>
+<script type="text/x-red" data-template-name="hook-end-error">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-message"><i class="fa fa-tag"></i>Message</label>
+    <input type="text" id="node-input-message" placeholder="Error Message">
+  </div>
+  <div class="form-row">
+    <label for="node-input-errorCode"><i class="fa fa-tag"></i>Error Code</label>
+    <input type="text" id="node-input-errorCode" placeholder="Error Code (optional)">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="hook-end-error">
+    <div>
+        <p>It terminates both opration and remote hooks with error.</p>
+    </div>
+</script>
