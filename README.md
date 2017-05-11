@@ -27,3 +27,5 @@ red-loopback provides following nodes.
 ### Installation
 
 ### Examples
+Following repository contains a example of red-loopback.
+https://github.com/nachiket-p/red-loopback-example
