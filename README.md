@@ -21,7 +21,8 @@ red-loopback provides following nodes.
 * **Method Call**: For calling any Loopback Model method
 * **Remote Hook**: Enables you to execute a function before or after a remote method is called by a client  
 * **Opration Hook**: Observes to models and allows to do something when a model performs a specific operation  
-* **End Hook**: Terminates both opration and remote hooks
+* **Hook End**: Terminates both opration and remote hooks
+* **Hook End Error**: Terminates both opration and remote hooks with error
 
 
 ### Installation

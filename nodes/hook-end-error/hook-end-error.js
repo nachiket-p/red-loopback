@@ -2,20 +2,23 @@ var helper = require('../observer-helper');
 
 module.exports = function (RED) {
   console.log("REGISTERING END-HOOK NODE");
-
-  var loopback = require('loopback');
-  var _ = require('lodash');
-
+  
   function HookEndNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
+    var messageType = config.messageType;
+    var message = config.message;
+    var statusCode = config.errorCode;
 
     node.on('input', function (msg) {
-      const err = {
-        message: config.message,
-        statusCode: config.errorCode
+      if (messageType === 'msg') {
+        message = RED.util.evaluateNodeProperty(message, messageType, node, msg);
       }
-      
+      const err = {
+        message: message,
+        statusCode: statusCode
+      }
+
       if (msg.endHook) {
         helper.hookEnd(err, msg)
       } else {

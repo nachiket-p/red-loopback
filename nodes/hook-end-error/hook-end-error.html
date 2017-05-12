@@ -6,8 +6,9 @@
       name: {
         value: null
       },
-      message: {
-        value: "Validation Error occured!"
+      message: { value: "", validate: RED.validators.typedInput("messageType") },
+      messageType: {
+        value: "msg"
       },
       errorCode: {
         value: null
@@ -15,9 +16,18 @@
     },
     inputs: 1,
     outputs: 0,
-    icon: "c_function.png",
+    icon: "endhookerror.png",
     label: function () {
       return this.name || "hook-end-error";
+    },
+    oneditprepare: function () {
+      var self = this;
+      $("#node-input-messageType").val(self.messageType);
+      $("#node-input-message").css('width', '70%').typedInput({
+        default: 'msg',
+        typeField: $("#node-input-messageType"),
+        types: ['msg', 'str']
+      });
     }
   });
 
@@ -28,17 +38,28 @@
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-    <label for="node-input-message"><i class="fa fa-tag"></i>Message</label>
+    <label for="node-input-message"><i class="fa fa-envelope"></i>Message</label>
     <input type="text" id="node-input-message" placeholder="Error Message">
+    <input type="hidden" id="node-input-messageType">
   </div>
   <div class="form-row">
-    <label for="node-input-errorCode"><i class="fa fa-tag"></i>Error Code</label>
+    <label for="node-input-errorCode"><i class="fa fa-exclamation-triangle"></i>Error Code</label>
     <input type="text" id="node-input-errorCode" placeholder="Error Code (optional)">
   </div>
 </script>
 
 <script type="text/x-red" data-help-name="hook-end-error">
-    <div>
-        <p>It terminates both opration and remote hooks with error.</p>
-    </div>
+  <div>
+    <p>It terminates both opration and remote hooks with error.</p>
+    <ul>
+      <li>
+        <b>Message</b> : If you wants to show error message from <code>msg</code> then choose <b>msg</b> from dropdown and
+        write path of error message. </br>
+        If you wants to show custom error message then choose <b>str</b> from dropdown and write message.
+      </li>
+      <li>
+        <b>Error Code</b> : Expected error code.
+      </li>
+    </ul>
+  </div>
 </script>
