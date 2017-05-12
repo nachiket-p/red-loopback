@@ -6,17 +6,14 @@ module.exports = function (RED) {
   function HookEndNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
-    var messageType = config.messageType;
-    var message = config.message;
-    var statusCode = config.errorCode;
-
     node.on('input', function (msg) {
-      if (messageType === 'msg') {
-        message = RED.util.evaluateNodeProperty(message, messageType, node, msg);
+      var message = config.message;
+      if (config.messageType === 'msg') {
+        message = RED.util.evaluateNodeProperty(config.message, config.messageType, node, msg);
       }
       const err = {
         message: message,
-        statusCode: statusCode
+        statusCode: config.errorCode
       }
 
       if (msg.endHook) {
