@@ -35,7 +35,7 @@
         value: "static"
       },
       staticMethod: {
-        value: "findById"
+        value: "find"
       },
       instancePath: {
         value: ""
@@ -139,7 +139,7 @@
       }
       //staticMethod dropdown with custom typedInput
       $("#node-input-staticMethod").css('width', '70%').typedInput({
-        default: 'findById',
+        default: 'find',
         types: [
           { 'value': 'find', 'label': 'find', 'options': ["find"] },
           { 'value': 'findById', 'label': 'findById', 'options': ["findById"] },
@@ -155,8 +155,8 @@
       })
         .on('change', CustomInputChangeHandler('#node-staticMethod'));
 
-      $("#node-input-method").typedInput('type', self.staticMethod);
-      $("#node-input-method").typedInput('value', self.staticMethod);
+      $("#node-input-staticMethod").typedInput('type', self.staticMethod);
+      $("#node-input-staticMethod").typedInput('value', self.staticMethod);
 
       //instanceMethod dropdown with custom typedInput
       $("#node-input-instanceMethod").css('width', '70%').typedInput({
@@ -170,8 +170,8 @@
       })
         .on('change', CustomInputChangeHandler('#node-instanceMethod'));
 
-      $("#node-input-instance").typedInput('type', self.instanceMethod);
-      $("#node-input-instance").typedInput('value', self.instanceMethod);
+      $("#node-input-instanceMethod").typedInput('type', self.instanceMethod);
+      $("#node-input-instanceMethod").typedInput('value', self.instanceMethod);
     
       $("#node-input-instancePath").css('width', '70%').typedInput({
         default: 'msg',
@@ -202,8 +202,8 @@
       }
 
       // type of method save
-      node.method = $('#node-input-staticMethod').val();
-      node.instance = $('#node-input-instanceMethod').val();
+      node.staticMethod = $('#node-input-staticMethod').val();
+      node.instanceMethod = $('#node-input-instanceMethod').val();
     }
   });
 
@@ -261,7 +261,7 @@
         Model Name : lists all models
       </li>
       <li>
-        Method : select method you wants to perform on model
+        Type : select method you wants to perform on model
       </li>
       <li>
         args : passes required arguments
