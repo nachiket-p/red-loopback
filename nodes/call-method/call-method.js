@@ -22,7 +22,8 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     var node = this;
     var modelName = config.modelname;
-    var method = config.method;
+    var methodType = config.methodType;
+    var method = methodType == 'instance' ? config.instanceMethod : config.staticMethod;
     var params = config.params;
 
     const app = helper.getAppRef(this);
@@ -30,22 +31,35 @@ module.exports = function (RED) {
 
     if (Model !== undefined) {
       this.status({ fill: "green", shape: "dot", text: "Model Found" });
-      if (!method || !Model[method]) {
-        this.status({ fill: "red", shape: "ring", text: "Method undefined" });
-        node.error({
-          message: 'Method Undefined'
-        });
-        return;
-      }
     } else {
-      this.status({ fill: "red", shape: "ring", text: "Model undefined" });
-      node.error({
-        message: 'Model Undefined'
-      });
+      helper.showError(node, 'Model not found: ' + modelName)
       return;
     }
 
     node.on('input', function (msg) {
+      var methodFunc;
+      var methodContext;
+      
+      if (methodType == 'instance') {
+        var instancePath = RED.util.evaluateNodeProperty(config.instancePath, 'msg', node, msg);
+        if (!instancePath) {
+          helper.showError(node, 'Instance NOT Found.')
+          return;
+        }
+        methodFunc = instancePath[method]
+        methodContext = instancePath
+      }
+      else { //FOR STATIC
+        methodFunc = Model[method]
+        methodContext = Model
+      }
+
+      if (!methodFunc) {
+        helper.showError(node, methodType + ' method not found: ' + method)
+        return;
+      }
+
+
       var callbackFunc = function (error, result) {
         if (error) {
           node.error({
@@ -62,16 +76,12 @@ module.exports = function (RED) {
       console.log("calling loopback-method with params", params, msg)
       for (var i = 0; i < params.length; i++) {
         var param = params[i], value;
-        value = param.value;
-        if (param.valueType === 'msg') {
-          value = RED.util.evaluateNodeProperty(param.value, param.valueType, node, msg);
-        }
+        value = RED.util.evaluateNodeProperty(param.value, param.valueType, node, msg);
         args.push(value);
       }
       console.log("calling loopback-method with ARGS: ", args)
       args.push(callbackFunc);
-      var methodCall = Model[method];
-      methodCall.apply(Model, args)
+      methodFunc.apply(methodContext, args)
     });
   }
   console.log("REGISTERING CALL METHOD")

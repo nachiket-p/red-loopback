@@ -98,6 +98,13 @@ const hookEnd = function (err, msg) {
   msg.endHook(err, msg);
 }
 
+const showError = function (node, msg) {
+  node.status({ fill: "red", shape: "ring", text: msg });
+  node.error({
+    message: msg
+  });
+}
+
 module.exports = {
   simplifyMsg: simplifyMsg,
   props: props,
@@ -105,5 +112,6 @@ module.exports = {
   EventObserver: EventObserver,
   RemoteObserver: RemoteObserver,
   hookEnd: hookEnd,
+  showError: showError,
   getAppRef,
 }

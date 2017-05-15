@@ -31,9 +31,17 @@
         value: "",
         required: true
       },
-      method: {
-        value: "find",
-        required: true
+      methodType: {
+        value: "static"
+      },
+      staticMethod: {
+        value: "findById"
+      },
+      instancePath: {
+        value: ""
+      },
+      instanceMethod: {
+        value: "updateAttributes"
       },
       description: {
         value: "",
@@ -45,10 +53,11 @@
     outputs: 1,
     icon: "callmethod.png",
     label: function () {
-      return (this.modelname && this.method ? (this.modelname + "_" + this.method).toUpperCase() : "call-method");
+      return (this.modelname ? this.modelname && this.methodType == 'static' ? (this.modelname + "_" + this.staticMethod) : (this.modelname + "_" + this.instanceMethod) : "Call Method");
     },
     oneditprepare: function () {
       var self = this;
+
       $.getJSON('lbmodels', function (data) {
         console.log('Model Data succes: ' + data);
         if (data) {
@@ -86,6 +95,89 @@
         var param = self.params[i];
         $("#node-input-rule-container").editableList('addItem', { param: param });
       }
+
+      // methodType handle
+      $(document).ready(function () {
+        $('#node-staticMethod').hide();
+        $('#node-instanceMethod').hide();
+        $('#node-instancePath').hide();
+        var $radios = $('input:radio[name=methodType]');
+        $radios.filter('[value=' + self.methodType + ']').prop('checked', true);
+        if (self.methodType === "static") {
+          console.log('Method Type:- ', self.methodType);
+          $('#node-staticMethod').show();
+        } else {
+          console.log('Method Type:- ', self.methodType);
+          $('#node-instanceMethod').show();
+          $('#node-instancePath').show();
+        }
+        $radios.change(function () {
+          if ($('#node-input-staticCheck').is(':checked')) {
+            $('#node-staticMethod').show();
+            $('#node-instanceMethod').hide();
+            $('#node-instancePath').hide();
+          } else {
+            $('#node-staticMethod').hide();
+            $('#node-instanceMethod').show();
+            $('#node-instancePath').show();
+          }
+        });
+      });
+
+      var CustomInputChangeHandler = function (id) {
+        return function (type, value) {
+          console.log('ON change:-', type, value);
+          if (value !== 'add method') {
+            $(id + ' button').css("width", "100%");
+            $(id + ' button.red-ui-typedInput-option-trigger').css("display", "none");
+          }
+          else {
+            $(id + ' button').css("width", "40%");
+            $(id + ' button.red-ui-typedInput-option-trigger').css("display", "block");
+          }
+        };
+      }
+      //staticMethod dropdown with custom typedInput
+      $("#node-input-staticMethod").css('width', '70%').typedInput({
+        default: 'findById',
+        types: [
+          { 'value': 'find', 'label': 'find', 'options': ["find"] },
+          { 'value': 'findById', 'label': 'findById', 'options': ["findById"] },
+          { 'value': 'findOne', 'label': 'findOne', 'options': ["findOne"] },
+          { 'value': 'count', 'label': 'count', 'options': ["count"] },
+          { 'value': 'create', 'label': 'create', 'options': ["create"] },
+          { 'value': 'destroyAll', 'label': 'destroyAll', 'options': ["destroyAll"] },
+          { 'value': 'updateAll', 'label': 'updateAll', 'options': ["updateAll"] },
+          { 'value': 'upsert', 'label': 'upsert', 'options': ["upsert"] },
+          { 'value': 'exists', 'label': 'exists', 'options': ["exists"] },
+          // { 'value': 'custom', 'label': 'custom', 'hasValue': true }
+        ]
+      })
+        .on('change', CustomInputChangeHandler('#node-staticMethod'));
+
+      $("#node-input-method").typedInput('type', self.staticMethod);
+      $("#node-input-method").typedInput('value', self.staticMethod);
+
+      //instanceMethod dropdown with custom typedInput
+      $("#node-input-instanceMethod").css('width', '70%').typedInput({
+        default: 'updateAttributes',
+        types: [
+          { 'value': 'updateAttributes', 'label': 'updateAttributes', 'options': ["updateAttributes"] },
+          { 'value': 'destroy', 'label': 'destroy', 'options': ["destroy"] },
+          { 'value': 'save', 'label': 'save', 'options': ["save"] },
+          // // { 'value': 'custom', 'label': 'custom', 'hasValue': true }
+        ]
+      })
+        .on('change', CustomInputChangeHandler('#node-instanceMethod'));
+
+      $("#node-input-instance").typedInput('type', self.instanceMethod);
+      $("#node-input-instance").typedInput('value', self.instanceMethod);
+    
+      $("#node-input-instancePath").css('width', '70%').typedInput({
+        default: 'msg',
+        typeField: $("#node-input-instancePathType"),
+        types: ['msg']
+      });
     },
     oneditsave: function () {
       var params = $("#node-input-rule-container").editableList('items');
@@ -101,8 +193,18 @@
         }
         node.params.push(paramObj);
       });
-    }
 
+      // save methodType
+      if ($('#node-input-staticCheck').is(':checked')) {
+        node.methodType = "static";
+      } else {
+        node.methodType = "instance";
+      }
+
+      // type of method save
+      node.method = $('#node-input-staticMethod').val();
+      node.instance = $('#node-input-instanceMethod').val();
+    }
   });
 
 </script>
@@ -110,18 +212,40 @@
   <div class="form-row">
     <label for="node-input-modelname"><i class="fa fa-table"></i> Model Name</label>
     <!--<input type="text" id="node-input-modelname" placeholder="Model Name">-->
-    <select id="node-input-modelname">
+    <select id="node-input-modelname"></select>
+  </div>
 
-        </select>
-  </div>
   <div class="form-row">
-    <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
-    <input type="text" id="node-input-method" placeholder="Method" />
+    <label for="node-input-methodType"><i class="icon-tag"></i> <span data-i18n="type"></span>Type</label>
+
+    <input type="radio" name="methodType" value="static" id="node-input-staticCheck" style="text-align:end; width:20px !important; height:20px">
+    <label for="node-input-staticCheck" style="width:80px">Static</label>
+
+    <input type="radio" name="methodType" value="instance" id="node-input-instanceCheck" style="text-align:end; width:20px !important; height:20px">
+    <label for="node-input-instanceCheck" style="width:80px">Instance</label>
   </div>
+
+  <div class="form-row" id="node-staticMethod">
+    <label for="node-input-staticMethod"></label>
+    <input type="text" id="node-input-staticMethod" placeholder="Method" />
+  </div>
+
+  <div class="form-row" id="node-instancePath">
+    <label for="node-input-instancePath">InstancePath</label>
+    <input type="text" id="node-input-instancePath" placeholder="path of instance" />
+    <input type="hidden" id="node-input-instancePathType">
+  </div>
+
+  <div class="form-row" id="node-instanceMethod">
+    <label for="node-input-instanceMethod"></label>
+    <input type="text" id="node-input-instanceMethod" placeholder="Add method">
+  </div>
+
   <div class="form-row">
     <label for="node-input-description"><i class="fa fa-info"></i> Description </label>
     <textarea id="node-input-description" placeholder="Description"></textarea>
   </div>
+
   <div class="form-row node-input-rule-container-row">
     <ol id="node-input-rule-container"></ol>
   </div>
@@ -137,7 +261,7 @@
         Model Name : lists all models
       </li>
       <li>
-        Method : query method
+        Method : select method you wants to perform on model
       </li>
       <li>
         args : passes required arguments
