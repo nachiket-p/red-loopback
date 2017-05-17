@@ -13,7 +13,15 @@ function simplifyMsg(ctx, modelName, methodName) {
   }
 
   msg.payload = ctx.instance || ctx.data;
-  msg.lbctx = ctx //_.merge(msg, _.pick(ctx, props)); //JSON.parse(JSON.stringify(ctx));
+  //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
+  msg.req = ctx.req;
+  msg.res = ctx.res;
+  ctx.req = ctx.res = null;
+  msg.lbctx = _.cloneDeep(ctx);
+  ctx.req = msg.req;
+  ctx.res = msg.res;
+  delete msg.lbctx.app;
+
   return msg;
 }
 
@@ -60,11 +68,6 @@ var RemoteObserver = function (Model, methodName, callback) {
       next = instance
     }
     const msg = simplifyMsg(ctx, modelName, methodName);
-    //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
-    delete msg.lbctx.app;
-    msg.req = msg.lbctx.req;
-    msg.res = msg.lbctx.res;
-    msg.lbctx.req = msg.lbctx.res = null;
     callback(msg, ctx, next);
   }
 
@@ -89,12 +92,6 @@ function getAppRef(node) {
 }
 
 const hookEnd = function (err, msg) {
-  //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
-  msg.lbctx.req = msg.req;
-  msg.lbctx.res = msg.res;
-  delete msg.req;
-  delete msg.res;
-
   msg.endHook(err, msg);
 }
 
