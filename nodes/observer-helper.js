@@ -11,17 +11,10 @@ function simplifyMsg(ctx, modelName, methodName) {
     msg.text = ctx.Model.definition.name + '.' + methodName + ' triggered';
     msg.modelName = ctx.Model.definition.name;
   }
-
-  msg.payload = ctx.instance || ctx.data;
-  //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
-  msg.req = ctx.req;
-  msg.res = ctx.res;
-  ctx.req = ctx.res = null;
-  msg.lbctx = _.cloneDeep(ctx);
-  ctx.req = msg.req;
-  ctx.res = msg.res;
+  msg.lbctx = _.clone(ctx);
   delete msg.lbctx.app;
 
+  msg.payload = ctx.instance || ctx.data;
   return msg;
 }
 
@@ -59,6 +52,7 @@ var RemoteObserver = function (Model, methodName, callback) {
   const modelName = Model.modelName;
   let isActive = true;
   this.observe = function (ctx, instance, next) {
+    console.log("Model: ", instance, " Methode name", methodName);
     //NOTE: If marked as notActive, do not execute anything for this Remote Observer instance. 
     if (!isActive) {
       next();
@@ -67,7 +61,17 @@ var RemoteObserver = function (Model, methodName, callback) {
     if (instance instanceof Function) {
       next = instance
     }
+    
+    var req = ctx.req;
+    var res = ctx.res;
+    ctx.req = ctx.res = null;
     const msg = simplifyMsg(ctx, modelName, methodName);
+    //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
+    msg.req = req;
+    msg.res = res;
+    ctx.req = req;
+    ctx.res = res;
+
     callback(msg, ctx, next);
   }
 
