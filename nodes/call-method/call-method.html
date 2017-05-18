@@ -2,19 +2,19 @@
   .tranformation-rule {
     padding: 10px;
   }
-
+  
   .padding-bottom-10 {
     padding-bottom: 10px;
   }
-
+  
   .padding-10 {
     padding: 10px;
   }
-
+  
   .margin-right-10 {
     margin-right: 10px;
   }
-
+  
   .display-flex {
     display: flex;
   }
@@ -47,7 +47,7 @@
         value: "",
         required: false
       },
-      params: { value: [{ valueType: 'msg', value: '' }] },
+      params: { value: [{ valueType: 'msg', value: '' }] }
     },
     inputs: 1,
     outputs: 1,
@@ -57,7 +57,14 @@
     },
     oneditprepare: function () {
       var self = this;
-
+      var staticMethods = ['find', 'findById', 'findOne', 'count', 'create', 'destroyAll', 'updateAll', 'upsert', 'exists'];
+      var instanceMethods = ['updateAttributes', 'destroy', 'save'];
+      var customMethod = false;
+      if(self.methodType == "static") {
+        customMethod = (staticMethods.indexOf(self.staticMethod) < 0)
+      } else {
+        customMethod = (instanceMethods.indexOf(self.instanceMethod) < 0)
+      }
       $.getJSON('lbmodels', function (data) {
         console.log('Model Data succes: ' + data);
         if (data) {
@@ -127,13 +134,13 @@
       var CustomInputChangeHandler = function (id) {
         return function (type, value) {
           console.log('ON change:-', type, value);
-          if (value !== 'add method') {
+          if (value !== 'custom') {
             $(id + ' button').css("width", "100%");
             $(id + ' button.red-ui-typedInput-option-trigger').css("display", "none");
           }
           else {
             $(id + ' button').css("width", "40%");
-            $(id + ' button.red-ui-typedInput-option-trigger').css("display", "block");
+            // $(id + ' button.red-ui-typedInput-option-trigger').css("display", "block");
           }
         };
       }
@@ -150,12 +157,12 @@
           { 'value': 'updateAll', 'label': 'updateAll', 'options': ["updateAll"] },
           { 'value': 'upsert', 'label': 'upsert', 'options': ["upsert"] },
           { 'value': 'exists', 'label': 'exists', 'options': ["exists"] },
-          // { 'value': 'custom', 'label': 'custom', 'hasValue': true }
+          { 'value': 'custom', 'label': 'custom', 'hasValue': true }
         ]
       })
         .on('change', CustomInputChangeHandler('#node-staticMethod'));
 
-      $("#node-input-staticMethod").typedInput('type', self.staticMethod);
+      $("#node-input-staticMethod").typedInput('type', customMethod ? 'custom' : self.staticMethod);
       $("#node-input-staticMethod").typedInput('value', self.staticMethod);
 
       //instanceMethod dropdown with custom typedInput
@@ -165,14 +172,14 @@
           { 'value': 'updateAttributes', 'label': 'updateAttributes', 'options': ["updateAttributes"] },
           { 'value': 'destroy', 'label': 'destroy', 'options': ["destroy"] },
           { 'value': 'save', 'label': 'save', 'options': ["save"] },
-          // // { 'value': 'custom', 'label': 'custom', 'hasValue': true }
+          { 'value': 'custom', 'label': 'custom', 'hasValue': true }
         ]
       })
         .on('change', CustomInputChangeHandler('#node-instanceMethod'));
 
-      $("#node-input-instanceMethod").typedInput('type', self.instanceMethod);
+      $("#node-input-instanceMethod").typedInput('type', customMethod ? 'custom' : self.instanceMethod);
       $("#node-input-instanceMethod").typedInput('value', self.instanceMethod);
-    
+
       $("#node-input-instancePath").css('width', '70%').typedInput({
         default: 'msg',
         typeField: $("#node-input-instancePathType"),
