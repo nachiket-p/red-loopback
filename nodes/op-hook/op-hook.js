@@ -1,5 +1,5 @@
 var helper = require('../observer-helper');
-
+const LoopbackContext = require('../LoopbackContext')
 module.exports = function (RED) {
   console.log("REGISTERING OP-HOOK NODE");
 
@@ -12,7 +12,11 @@ module.exports = function (RED) {
 
     if (Model !== undefined) {
       const observer = new helper.OperationObserver(Model, config.method, function (msg, ctx, next) {
+        const lbContext = LoopbackContext.getContext(node)
+        const contextId = lbContext.add(ctx)
+        msg.lbContextId = contextId
         msg.endHook = function (err, msg) {
+          lbContext.remove(contextId)
           next(err);
         }
         node.send(msg);

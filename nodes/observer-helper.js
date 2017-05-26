@@ -11,8 +11,9 @@ function simplifyMsg(ctx, modelName, methodName) {
     msg.text = ctx.Model.definition.name + '.' + methodName + ' triggered';
     msg.modelName = ctx.Model.definition.name;
   }
-  msg.lbctx = _.clone(ctx);
-  delete msg.lbctx.app;
+  
+  //msg.lbctx = _.clone(ctx);
+  //delete msg.lbctx.app;
 
   msg.payload = ctx.instance || ctx.data;
   return msg;

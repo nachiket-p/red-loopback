@@ -5,6 +5,7 @@ module.exports = function(RED) {
     var _ = require('lodash');
     var async = require('lodash');
     var helper = require('../observer-helper');
+    const LoopbackContext = require('../LoopbackContext')
 
     function sendResults(node,_msgid,msgs) {
         if (msgs == null) {
@@ -63,6 +64,9 @@ module.exports = function(RED) {
             env: _.clone(process.env),
             app: app,
             models: app.models,
+            getLoopbackContext: function(contextId){
+                return LoopbackContext.getContext(node).get(contextId)
+            },
             _: _,
             async: async,
             console:console,
