@@ -18,16 +18,47 @@ function simplifyMsg(ctx, modelName, methodName) {
   return msg;
 }
 
+const MAP = {
+  'before delete': 'before save',
+  'after delete': 'after save',
+}
 var OperationObserver = function (Model, methodName, callback) {
+  // mixins handling 
+  let deleteField = '_isDeleted';
+  const mixin = Model.settings.mixins;
+  const hasSoftDelete = mixin ? mixin.SoftDelete : false;
+  if(hasSoftDelete && (typeof mixin.SoftDelete == 'object') && mixin.SoftDelete._isDeleted) {
+    deleteField = Model.settings.mixins.SoftDelete._isDeleted;
+  }
+  
   const modelName = Model.modelName
   this.observe = function (ctx, next) {
+    const data = ctx.isNewInstance ? ctx.instance : ctx.data;
+    if (hasSoftDelete && data) {
+      if (!MAP[methodName]) {
+        if (data[deleteField]) {
+          next();
+          return;
+        }
+      } else {
+        if (!data[deleteField]) {
+          next();
+          return;
+        }
+      }
+    }
     const msg = simplifyMsg(ctx, modelName, methodName);
     callback(msg, ctx, next);
   }
-  Model.observe(methodName, this.observe);
+
+  let actualMethod = methodName
+  if(hasSoftDelete && MAP[methodName]) {
+    actualMethod = MAP[methodName]
+  }
+  Model.observe(actualMethod, this.observe);
 
   this.remove = function () {
-    Model.removeObserver(methodName, this.observe)
+    Model.removeObserver(actualMethod, this.observe)
   }
 }
 
@@ -61,7 +92,7 @@ var RemoteObserver = function (Model, methodName, callback) {
     if (instance instanceof Function) {
       next = instance
     }
-    
+
     var req = ctx.req;
     var res = ctx.res;
     ctx.req = ctx.res = null;
