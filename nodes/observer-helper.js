@@ -3,6 +3,7 @@ var loopback = require('loopback');
 var _ = require('lodash');
 var async = require('async');
 var props = ['instance', 'currentInstance', 'data', 'hookState', 'where', 'query', 'isNewInstance', 'options'];
+const LoopbackContext = require('./LoopbackContext')
 
 function simplifyMsg(ctx, modelName, methodName) {
   var msg = {};
@@ -25,7 +26,7 @@ const MAP = {
   'before delete': 'before save',
   'after delete': 'after save',
 }
-var OperationObserver = function (Model, methodName, callback) {
+var OperationObserver = function (Model, methodName, methodType, callback) {
   // mixins handling 
   let deleteField = '_isDeleted';
   const mixin = Model.settings.mixins;
@@ -82,11 +83,11 @@ var EventObserver = function (Model, methodName, callback) {
   }
 }
 
-var RemoteObserver = function (Model, methodName, callback) {
+var RemoteObserver = function (Model, methodName, methodType, callback) {
   const modelName = Model.modelName;
   let isActive = true;
   this.observe = function (ctx, instance, next) {
-    console.log("Model: ", instance, " Methode name", methodName);
+    console.log("Model: ", instance, ", Methode name: ", methodName, ", Method Type: ", methodType);
     //NOTE: If marked as notActive, do not execute anything for this Remote Observer instance. 
     if (!isActive) {
       next();
@@ -95,20 +96,15 @@ var RemoteObserver = function (Model, methodName, callback) {
     if (instance instanceof Function) {
       next = instance
     }
-
-    var req = ctx.req;
-    var res = ctx.res;
-    ctx.req = ctx.res = null;
     const msg = simplifyMsg(ctx, modelName, methodName);
-    //TEMP FIX FOR REQ/RES CLONE ISSUE - https://github.com/node-red/node-red/issues/97
-    msg.req = req;
-    msg.res = res;
-    ctx.req = req;
-    ctx.res = res;
-
     callback(msg, ctx, next);
   }
 
+  if (methodType == 'before') {
+    Model.beforeRemote(methodName, this.observe);
+  } else {
+    Model.afterRemote(methodName, this.observe);
+  }
   this.remove = function () {
     //NOTE: There are no methods available to remove Remote Observer in LoopBack 3.6.0
     //Model.removeObserver(methodName, this.observe)
@@ -140,13 +136,50 @@ const showError = function (node, msg) {
   });
 }
 
+const _createObserver = (config, node, Observer) => {
+  const app = getAppRef(node);
+  var Model = app.models[config.modelName];
+
+  if (Model !== undefined) {
+    const observer = new Observer(Model, config.method, config.methodType, function (msg, ctx, next) {
+      const lbContext = LoopbackContext.getContext(node)
+      const contextId = lbContext.add(ctx)
+      msg.lbContextId = contextId
+      msg.endHook = function (err, msg) {
+        const lbData = msg.payload.lbData;
+        if (lbData && (lbData.instance || lbData.data)) {
+          if (lbData.instance)
+            _.merge(lbContext.instance, lbData.instance)
+          if (lbData.data)
+            _.merge(lbContext.data, lbData.data)
+        }
+        lbContext.remove(contextId)
+        next(err);
+      }
+      node.send(msg);
+    });
+    node.on('close', function () {
+      console.log('closing node')
+      observer.remove();
+    });
+    node.status({ fill: "green", shape: "dot", text: "Observing" });
+  } else {
+    const errMsg = "Model " + config.modelName + " Not Found";
+    showError(node, errMsg)
+  }
+}
+
 module.exports = {
   simplifyMsg: simplifyMsg,
   props: props,
-  OperationObserver: OperationObserver,
   EventObserver: EventObserver,
-  RemoteObserver: RemoteObserver,
   hookEnd: hookEnd,
   showError: showError,
+  addOperationObserver: (config, node) => {
+    _createObserver(config, node, OperationObserver)
+  },
+  addRemoteObserver: (config, node) => {
+    _createObserver(config, node, RemoteObserver)
+  },
   getAppRef,
 }
