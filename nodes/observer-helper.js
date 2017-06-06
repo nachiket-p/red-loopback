@@ -11,11 +11,13 @@ function simplifyMsg(ctx, modelName, methodName) {
     msg.text = ctx.Model.definition.name + '.' + methodName + ' triggered';
     msg.modelName = ctx.Model.definition.name;
   }
-  
+
   //msg.lbctx = _.clone(ctx);
   //delete msg.lbctx.app;
 
-  msg.payload = ctx.instance || ctx.data;
+  msg.payload = {
+    lbdata: ctx.instance || ctx.data || ctx.args.data
+  }
   return msg;
 }
 
@@ -28,10 +30,10 @@ var OperationObserver = function (Model, methodName, callback) {
   let deleteField = '_isDeleted';
   const mixin = Model.settings.mixins;
   const hasSoftDelete = mixin ? mixin.SoftDelete : false;
-  if(hasSoftDelete && (typeof mixin.SoftDelete == 'object') && mixin.SoftDelete._isDeleted) {
+  if (hasSoftDelete && (typeof mixin.SoftDelete == 'object') && mixin.SoftDelete._isDeleted) {
     deleteField = Model.settings.mixins.SoftDelete._isDeleted;
   }
-  
+
   const modelName = Model.modelName
   this.observe = function (ctx, next) {
     const data = ctx.isNewInstance ? ctx.instance : ctx.data;
@@ -53,7 +55,7 @@ var OperationObserver = function (Model, methodName, callback) {
   }
 
   let actualMethod = methodName
-  if(hasSoftDelete && MAP[methodName]) {
+  if (hasSoftDelete && MAP[methodName]) {
     actualMethod = MAP[methodName]
   }
   Model.observe(actualMethod, this.observe);

@@ -16,6 +16,13 @@ module.exports = function (RED) {
         const contextId = lbContext.add(ctx)
         msg.lbContextId = contextId
         msg.endHook = function (err, msg) {
+          const lbData = msg.payload.lbData;
+          if (lbData && (lbData.instance || lbData.data)) {
+            if (lbData.instance)
+              _.merge(lbContext.instance, lbData.instance)
+            if (lbData.data)
+              _.merge(lbContext.data, lbData.data)
+          }
           lbContext.remove(contextId)
           next(err);
         }
@@ -35,7 +42,7 @@ module.exports = function (RED) {
       });
     }
   }
-  
+
   RED.nodes.registerType("OP-hook", OpHookNode);
   RED.library.register("loopback");
 }
