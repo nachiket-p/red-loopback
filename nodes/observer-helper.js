@@ -17,7 +17,11 @@ function simplifyMsg(ctx, modelName, methodName) {
   //delete msg.lbctx.app;
 
   msg.payload = {
-    lbdata: ctx.instance || ctx.data || ctx.args.data
+    lbData: {
+      instance: ctx.instance,
+      data: ctx.data,
+      args: ctx.args
+    }
   }
   return msg;
 }
@@ -145,13 +149,19 @@ const _createObserver = (config, node, Observer) => {
       const lbContext = LoopbackContext.getContext(node)
       const contextId = lbContext.add(ctx)
       msg.lbContextId = contextId
+    
       msg.endHook = function (err, msg) {
+        const lbctx = lbContext.get(contextId)
         const lbData = msg.payload.lbData;
-        if (lbData && (lbData.instance || lbData.data)) {
+        if (lbData && (lbData.instance || lbData.data || lbData.args)) {
           if (lbData.instance)
-            _.merge(lbContext.instance, lbData.instance)
-          if (lbData.data)
-            _.merge(lbContext.data, lbData.data)
+            _.merge(lbctx.instance, lbData.instance)
+          if (lbData.data) {
+            _.merge(lbctx.data, lbData.data)
+          }
+          if (lbData.args) {
+            _.merge(lbctx.args, lbData.args)
+          }
         }
         lbContext.remove(contextId)
         next(err);
