@@ -2,9 +2,8 @@
 var loopback = require('loopback');
 var _ = require('lodash');
 var async = require('async');
-var props = ['instance', 'currentInstance', 'data', 'hookState', 'where', 'query', 'isNewInstance', 'options'];
+var props = ['instance', 'currentInstance', 'data', 'hookState', 'where', 'query', 'isNewInstance', 'options'];;
 const LoopbackContext = require('./LoopbackContext')
-
 function simplifyMsg(ctx, modelName, methodName) {
   var msg = {};
 
@@ -16,13 +15,7 @@ function simplifyMsg(ctx, modelName, methodName) {
   //msg.lbctx = _.clone(ctx);
   //delete msg.lbctx.app;
 
-  msg.payload = {
-    lbData: {
-      instance: ctx.instance,
-      data: ctx.data,
-      args: ctx.args
-    }
-  }
+  msg.lbData = _.pick(ctx, ['instance', 'data', 'args', 'isNewInstance', 'hookState', 'where', 'query', 'options'])
   return msg;
 }
 
@@ -149,11 +142,11 @@ const _createObserver = (config, node, Observer) => {
       const lbContext = LoopbackContext.getContext(node)
       const contextId = lbContext.add(ctx)
       msg.lbContextId = contextId
-    
+
       msg.endHook = function (err, msg) {
         const lbctx = lbContext.get(contextId)
-        const lbData = msg.payload.lbData;
-        if (lbData && (lbData.instance || lbData.data || lbData.args)) {
+        const lbData = msg.lbData;
+        if (lbData) {
           if (lbData.instance)
             _.merge(lbctx.instance, lbData.instance)
           if (lbData.data) {
@@ -161,6 +154,12 @@ const _createObserver = (config, node, Observer) => {
           }
           if (lbData.args) {
             _.merge(lbctx.args, lbData.args)
+          }
+          if (lbData.where){
+            _.merge(lbctx.where, lbData.where)
+          }
+          if (lbData.query){
+            _.merge(lbctx.query, lbData.query)
           }
         }
         lbContext.remove(contextId)
