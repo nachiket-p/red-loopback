@@ -81,6 +81,10 @@
                 after : runs after the remote method has finished successfully
             </li>
         </ul>
-        <div> Hook must be ended with hook end node. </div>
+        <div> Hook must be ended with hook end or hook end error node. </div>
+        <div><b>Note</b></div>
+        <div>Here, you gets <b>lbData</b> object in msg which contains primary data (eg. args, data, etc) as per loopback standerds.
+            </div>
+        <div>If you manipulates lbData, it reflacts on eventual result.</div>
     </div>
 </script>
