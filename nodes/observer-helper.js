@@ -14,7 +14,7 @@ function simplifyMsg(ctx, modelName, methodName) {
 
   //msg.lbctx = _.clone(ctx);
   //delete msg.lbctx.app;
-
+  msg.payload = ctx.data || ctx.instance;
   msg.lbData = _.pick(ctx, ['instance', 'data', 'args', 'isNewInstance', 'hookState', 'where', 'query', 'options'])
   return msg;
 }
