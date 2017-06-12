@@ -77,6 +77,8 @@ module.exports = function (RED) {
       for (var i = 0; i < params.length; i++) {
         var param = params[i], value;
         value = RED.util.evaluateNodeProperty(param.value, param.valueType, node, msg);
+        
+        //BUG: args.push(JSON.parse(JSON.stringify(value))); for date this works
         args.push(value);
       }
       console.log("calling loopback-method with ARGS: ", args)
