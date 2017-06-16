@@ -78,8 +78,12 @@ module.exports = function (RED) {
         var param = params[i], value;
         value = RED.util.evaluateNodeProperty(param.value, param.valueType, node, msg);
         
-        //BUG: args.push(JSON.parse(JSON.stringify(value))); for date this works
-        args.push(value);
+        if (_.isObject(value)) {
+          args.push(JSON.parse(JSON.stringify(value)));
+          console.log("value is object: ", value);
+        } else {
+          args.push(value);
+        }
       }
       console.log("calling loopback-method with ARGS: ", args)
       args.push(callbackFunc);
