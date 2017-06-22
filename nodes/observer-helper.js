@@ -2,7 +2,7 @@
 var loopback = require('loopback');
 var _ = require('lodash');
 var async = require('async');
-var props = ['instance', 'currentInstance', 'data', 'hookState', 'where', 'query', 'isNewInstance', 'options'];;
+var props = ['instance', 'currentInstance', 'data', 'args', 'hookState', 'where', 'query', 'isNewInstance', 'options'];
 const LoopbackContext = require('./LoopbackContext')
 function simplifyMsg(ctx, modelName, methodName) {
   var msg = {};
@@ -15,7 +15,7 @@ function simplifyMsg(ctx, modelName, methodName) {
   //msg.lbctx = _.clone(ctx);
   //delete msg.lbctx.app;
   msg.payload = ctx.data || ctx.instance;
-  msg.lbData = _.pick(ctx, ['instance', 'data', 'args', 'isNewInstance', 'hookState', 'where', 'query', 'options'])
+  msg.lbData = _.pick(ctx, props)
   return msg;
 }
 
