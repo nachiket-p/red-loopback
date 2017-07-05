@@ -4,7 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var props = ['instance', 'currentInstance', 'data', 'args', 'hookState', 'where', 'query', 'isNewInstance', 'options'];
 const LoopbackContext = require('./LoopbackContext')
-function simplifyMsg(ctx, modelName, methodName) {
+function simplifyMsg(ctx, remoteInstance, modelName, methodName) {
   var msg = {};
 
   if (ctx.Model !== undefined) {
@@ -14,8 +14,12 @@ function simplifyMsg(ctx, modelName, methodName) {
 
   //msg.lbctx = _.clone(ctx);
   //delete msg.lbctx.app;
+  
   msg.payload = ctx.data || ctx.instance;
   msg.lbData = _.pick(ctx, props)
+  if (remoteInstance && !(remoteInstance instanceof Function)) {
+    msg.lbData['remoteInstance'] = remoteInstance;
+  }
   return msg;
 }
 
@@ -48,7 +52,7 @@ var OperationObserver = function (Model, methodName, methodType, callback) {
         }
       }
     }
-    const msg = simplifyMsg(ctx, modelName, methodName);
+    const msg = simplifyMsg(ctx, null, modelName, methodName);
     callback(msg, ctx, next);
   }
 
@@ -93,7 +97,7 @@ var RemoteObserver = function (Model, methodName, methodType, callback) {
     if (instance instanceof Function) {
       next = instance
     }
-    const msg = simplifyMsg(ctx, modelName, methodName);
+    const msg = simplifyMsg(ctx, instance, modelName, methodName);
     callback(msg, ctx, next);
   }
 
