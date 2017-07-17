@@ -4,6 +4,7 @@ module.exports = function(RED) {
     var vm = require("vm");
     var _ = require('lodash');
     var async = require('async');
+    var moment = require('moment');
     var helper = require('../observer-helper');
     const LoopbackContext = require('../LoopbackContext')
 
@@ -69,6 +70,7 @@ module.exports = function(RED) {
             },
             _: _,
             async: async,
+            moment: moment,
             console:console,
             util:util,
             Buffer:Buffer,
