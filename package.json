@@ -9,6 +9,7 @@
   "dependencies": {
     "async": "^2.3.0",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "shortid": "^2.2.8"
   },
   "peerDependencies": {
