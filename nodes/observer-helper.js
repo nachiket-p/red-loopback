@@ -38,7 +38,7 @@ var OperationObserver = function (Model, methodName, methodType, callback) {
 
   const modelName = Model.modelName
   this.observe = function (ctx, next) {
-    const data = ctx.isNewInstance ? ctx.instance : (ctx.data || ctx.instance);
+    const data = ctx.instance || ctx.data;
     if (hasSoftDelete && data) {
       if (!MAP[methodName]) {
         if (data[deleteField]) {
